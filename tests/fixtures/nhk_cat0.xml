@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss xmlns:nhknews="http://news.web.nhk/rss/rss2.0/modules/nhknews/" version="2.0">
+  <channel>
+    <title>NHKONEニュース</title>
+    <description>日本放送協会 NHKONEニュース</description>
+    <link>https://news.web.nhk/newsweb/</link>
+    <item>
+      <title>ダミー見出し1 政府が新しい制度を発表</title>
+      <link>https://news.web.nhk/newsweb/na/nd-20261009de00001</link>
+      <guid isPermaLink="true">https://news.web.nhk/newsweb/na/nd-20261009de00001</guid>
+      <description>これはテスト用のダミー本文1です。
+
+二段落目のダミー本文です。</description>
+      <pubDate>Fri, 09 Oct 2026 02:49:22 +0900</pubDate>
+      <nhknews:new>false</nhknews:new>
+    </item>
+    <item>
+      <title>ダミー見出し2 経済指標が公表</title>
+      <link>https://news.web.nhk/newsweb/na/nd-20261008de00002</link>
+      <guid isPermaLink="true">https://news.web.nhk/newsweb/na/nd-20261008de00002</guid>
+      <description>これはテスト用のダミー本文2です。</description>
+      <pubDate>Thu, 08 Oct 2026 21:11:28 +0900</pubDate>
+      <nhknews:new>false</nhknews:new>
+    </item>
+    <item>
+      <title>ダミー見出し3 国会で審議が始まる</title>
+      <link>https://news.web.nhk/newsweb/na/nd-20261008de00003</link>
+      <guid isPermaLink="true">https://news.web.nhk/newsweb/na/nd-20261008de00003</guid>
+      <description>これはテスト用のダミー本文3です。</description>
+      <pubDate>Thu, 08 Oct 2026 22:08:00 +0900</pubDate>
+      <nhknews:new>true</nhknews:new>
+    </item>
+  </channel>
+</rss>

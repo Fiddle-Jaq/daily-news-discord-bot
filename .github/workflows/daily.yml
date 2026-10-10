@@ -1,0 +1,90 @@
+name: daily
+
+on:
+  schedule:
+    - cron: "7 6 * * *"
+      timezone: "Asia/Tokyo"
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Ignore the already-posted-today check"
+        type: boolean
+        default: false
+      dry_run:
+        description: "Print the payload only (no post, no state update)"
+        type: boolean
+        default: false
+      no_llm:
+        description: "Skip Gemini and use the fallback path (manual testing only)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+# Serialize runs so a queued run never posts from a stale state.json (SPEC §9.2).
+concurrency:
+  group: daily-news
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  daily:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      # Check out the branch, not the triggering SHA, to read the latest state.json (SPEC §9.2).
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: main
+      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+        with:
+          enable-cache: true
+      - run: uv sync --locked --no-dev
+
+      # Secrets are passed to this step only (SPEC §9.7). Inputs are empty on schedule runs,
+      # so no flag is added there.
+      - name: Run daily-news
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          INPUT_FORCE: ${{ inputs.force }}
+          INPUT_DRY_RUN: ${{ inputs.dry_run }}
+          INPUT_NO_LLM: ${{ inputs.no_llm }}
+        run: |
+          args=()
+          if [ "$INPUT_FORCE" = true ]; then args+=(--force); fi
+          if [ "$INPUT_DRY_RUN" = true ]; then args+=(--dry-run); fi
+          if [ "$INPUT_NO_LLM" = true ]; then args+=(--no-llm); fi
+          if [ "$INPUT_DRY_RUN" = true ]; then
+            # The payload holds headlines and summaries; print only the report (SPEC §9.5).
+            uv run --no-dev daily-news "${args[@]}" >"$RUNNER_TEMP/dry-run.json"
+            if [ -s "$RUNNER_TEMP/dry-run.json" ]; then jq '.report' "$RUNNER_TEMP/dry-run.json"; fi
+          else
+            uv run --no-dev daily-news "${args[@]}"
+          fi
+
+      # Runs only after a successful non-dry run. `git add` also stages a new (untracked)
+      # state.json on the first run, so the check uses the staged diff.
+      - name: Commit state.json
+        if: ${{ success() && !inputs.dry_run }}
+        # Identity for both the commit and a rebase on retry.
+        env:
+          GIT_AUTHOR_NAME: github-actions[bot]
+          GIT_AUTHOR_EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
+          GIT_COMMITTER_NAME: github-actions[bot]
+          GIT_COMMITTER_EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
+        run: |
+          git add -- state.json
+          if git diff --cached --quiet; then
+            echo "state.json unchanged"
+            exit 0
+          fi
+          git commit -m "chore: update state.json"
+          if ! git push origin HEAD:main; then
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi

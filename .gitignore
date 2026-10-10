@@ -1,0 +1,13 @@
+.env
+.env.*
+!.env.example
+
+# python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+*.swp
+*.swo
+*~

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss xmlns:media="http://search.yahoo.com/mrss/" xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0">
+  <channel>
+    <title>World news | The Guardian</title>
+    <link>https://www.theguardian.com/world</link>
+    <description>Dummy channel description</description>
+    <language>en-gb</language>
+    <copyright>Dummy copyright notice</copyright>
+    <pubDate>Thu, 08 Oct 2026 17:55:09 GMT</pubDate>
+    <dc:date>2026-10-08T17:55:09Z</dc:date>
+    <dc:language>en-gb</dc:language>
+    <dc:rights>Dummy copyright notice</dc:rights>
+    <image>
+      <title>The Guardian</title>
+      <url>https://assets.guim.co.uk/images/dummy-logo.png</url>
+      <link>https://www.theguardian.com</link>
+    </image>
+    <item>
+      <title>Dummy headline one about a policy change</title>
+      <link>https://www.theguardian.com/world/2026/oct/08/dummy-article-one</link>
+      <description>&lt;p&gt;Dummy standfirst sentence for testing &amp;amp; parsing.&lt;/p&gt;&lt;p&gt;This is the first dummy paragraph. It exists only to make the description long enough to be truncated by the parser.&lt;/p&gt;&lt;p&gt;This is the second dummy paragraph, which adds even more filler text for the same purpose.&lt;/p&gt; &lt;a href="https://www.theguardian.com/world/2026/oct/08/dummy-article-one"&gt;Continue reading...&lt;/a&gt;</description>
+      <category domain="https://www.theguardian.com/world/world">World news</category>
+      <category domain="https://www.theguardian.com/world/europe-news">Europe</category>
+      <pubDate>Thu, 08 Oct 2026 17:03:42 GMT</pubDate>
+      <guid>https://www.theguardian.com/world/2026/oct/08/dummy-article-one</guid>
+      <media:content width="140" url="https://i.guim.co.uk/img/media/dummy/master/1.jpg?width=140&amp;quality=85&amp;auto=format&amp;fit=max&amp;s=dummy">
+        <media:credit scheme="urn:ebu">Photograph: Dummy Credit</media:credit>
+      </media:content>
+      <media:content width="460" url="https://i.guim.co.uk/img/media/dummy/master/1.jpg?width=460&amp;quality=85&amp;auto=format&amp;fit=max&amp;s=dummy">
+        <media:credit scheme="urn:ebu">Photograph: Dummy Credit</media:credit>
+      </media:content>
+      <dc:creator>Dummy Author</dc:creator>
+      <dc:date>2026-10-08T17:03:42Z</dc:date>
+    </item>
+    <item>
+      <title>Dummy headline two about a summit</title>
+      <link>https://www.theguardian.com/world/2026/oct/08/dummy-article-two</link>
+      <description>&lt;p&gt;Short dummy standfirst.&lt;/p&gt; &lt;a href="https://www.theguardian.com/world/2026/oct/08/dummy-article-two"&gt;Continue reading...&lt;/a&gt;</description>
+      <category domain="https://www.theguardian.com/world/world">World news</category>
+      <pubDate>Thu, 08 Oct 2026 16:10:00 GMT</pubDate>
+      <guid>https://www.theguardian.com/world/2026/oct/08/dummy-article-two</guid>
+      <dc:creator>Dummy Author</dc:creator>
+      <dc:date>2026-10-08T16:10:00Z</dc:date>
+    </item>
+  </channel>
+</rss>

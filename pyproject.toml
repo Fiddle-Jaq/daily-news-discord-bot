@@ -1,0 +1,51 @@
+[project]
+name = "daily-news-discord-bot"
+version = "0.1.0"
+description = "Posts curated daily Japan and world news to Discord every morning"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "feedparser>=6.0.14",
+    "google-genai>=2.29.0",
+    "httpx>=0.28.1",
+    "pydantic>=2.14.0",
+]
+
+[project.scripts]
+daily-news = "daily_news.cli:main"
+
+[build-system]
+requires = ["uv_build>=0.12.23,<0.13"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "daily_news"
+
+[dependency-groups]
+dev = [
+    "mypy>=2.4.0",
+    "pytest>=9.1.1",
+    "ruff>=0.16.10",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+# Keep ruff off the code examples inside SPEC.md / CLAUDE.md.
+extend-exclude = ["*.md"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "SIM", "RUF", "DTZ"]
+
+[tool.mypy]
+strict = true
+plugins = ["pydantic.mypy"]
+files = ["src", "tests"]
+
+# feedparser ships no type information; its results are converted to pydantic models at once.
+[[tool.mypy.overrides]]
+module = "feedparser"
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

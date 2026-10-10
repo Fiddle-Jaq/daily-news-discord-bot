@@ -1,0 +1,100 @@
+# Feeds and tuning values (SPEC §4.2). Checked with `daily-news --check-feeds`.
+
+[selection]
+japan_max = 7
+world_max = 4
+window_hours = 30          # normal time window
+max_window_hours = 48      # upper bound when the last post is older
+max_candidates = 120       # candidates passed to the LLM
+per_feed_max = 20          # newest N articles taken from each feed
+stale_feed_hours = 72      # a feed whose newest article is older than this is "dead"
+description_max_chars = 200
+
+[filters]
+exclude_url_patterns = ["/sport", "/sports/", "/entertainment", "/culture/", "/lifestyle"]
+
+# --- Japan (primary: NHK) ---
+
+[[feeds]]
+name = "NHK 主要"
+url = "https://news.web.nhk/n-data/conf/na/rss/cat0.xml"
+lang = "ja"
+source = "NHK"
+fallback_region = "japan"   # slot used by the no-LLM fallback
+fallback_priority = 1       # lower wins; unset means never used for the fallback
+
+[[feeds]]
+name = "NHK 社会"
+url = "https://news.web.nhk/n-data/conf/na/rss/cat1.xml"
+lang = "ja"
+source = "NHK"
+
+[[feeds]]
+name = "NHK 科学・医療"
+url = "https://news.web.nhk/n-data/conf/na/rss/cat3.xml"
+lang = "ja"
+source = "NHK"
+
+[[feeds]]
+name = "NHK 政治"
+url = "https://news.web.nhk/n-data/conf/na/rss/cat4.xml"
+lang = "ja"
+source = "NHK"
+
+[[feeds]]
+name = "NHK 経済"
+url = "https://news.web.nhk/n-data/conf/na/rss/cat5.xml"
+lang = "ja"
+source = "NHK"
+
+[[feeds]]
+name = "NHK 国際"
+url = "https://news.web.nhk/n-data/conf/na/rss/cat6.xml"
+lang = "ja"
+source = "NHK"
+
+# --- Japan (backup sources) ---
+
+[[feeds]]
+name = "BBC 日本語"
+url = "https://feeds.bbci.co.uk/japanese/rss.xml"
+lang = "ja"
+source = "BBC"
+fallback_region = "japan"
+fallback_priority = 2
+
+[[feeds]]
+name = "Japan Times"
+url = "https://www.japantimes.co.jp/feed/"
+lang = "en"
+source = "Japan Times"
+
+# --- World ---
+
+[[feeds]]
+name = "BBC World"
+url = "https://feeds.bbci.co.uk/news/world/rss.xml"
+lang = "en"
+source = "BBC"
+fallback_region = "world"
+fallback_priority = 1
+
+[[feeds]]
+name = "Guardian World"
+url = "https://www.theguardian.com/world/rss"
+lang = "en"
+source = "Guardian"
+fallback_region = "world"
+fallback_priority = 2
+
+[[feeds]]
+name = "NYT World"
+url = "https://rss.nytimes.com/services/xml/rss/nyt/World.xml"
+lang = "en"
+source = "NYT"
+
+[[feeds]]
+name = "Al Jazeera"
+url = "https://www.aljazeera.com/xml/rss/all.xml"
+lang = "en"
+source = "Al Jazeera"

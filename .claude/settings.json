@@ -1,0 +1,15 @@
+{
+  "theme": "dark",
+  "permissions": {
+    "deny": [
+      "Read(./.env)",
+      "Read(./.env.local)",
+      "Read(./.env.production)",
+      "Bash(gh secret *)",
+      "Bash(gh auth token*)"
+    ],
+    "ask": [
+      "Bash(git push *)"
+    ]
+  }
+}

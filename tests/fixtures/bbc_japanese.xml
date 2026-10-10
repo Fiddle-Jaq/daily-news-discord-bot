@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:media="http://search.yahoo.com/mrss/">
+    <channel>
+        <title><![CDATA[BBC Japanese]]></title>
+        <description><![CDATA[BBC Japanese - 最新ニュース - BBCニュース]]></description>
+        <link>https://www.bbc.com/japanese</link>
+        <image>
+            <url>http://news.files.bbci.co.uk/ws/img/logos/rss/bbc_news_japan.gif</url>
+            <title>BBC Japanese</title>
+            <link>https://www.bbc.com/japanese</link>
+        </image>
+        <generator>RSS for Node</generator>
+        <lastBuildDate>Thu, 08 Oct 2026 18:04:05 GMT</lastBuildDate>
+        <atom:link href="https://feeds.bbci.co.uk/japanese/rss.xml" rel="self" type="application/rss+xml"/>
+        <copyright><![CDATA[ダミーの著作権表記]]></copyright>
+        <language><![CDATA[ja]]></language>
+        <ttl>15</ttl>
+        <item>
+            <title><![CDATA[ダミー見出しA　海外で選挙の結果が判明]]></title>
+            <description><![CDATA[これはテスト用のダミー本文Aです。]]></description>
+            <link>https://www.bbc.com/japanese/articles/dummy0000001?at_medium=RSS&amp;at_campaign=rss</link>
+            <guid isPermaLink="false">https://www.bbc.com/japanese/articles/dummy0000001#0</guid>
+            <pubDate>Thu, 08 Oct 2026 05:44:07 GMT</pubDate>
+            <media:thumbnail width="240" height="135" url="https://ichef.bbci.co.uk/ace/ws/240/dummy/thumbnail-a.jpg"/>
+        </item>
+        <item>
+            <title><![CDATA[ダミー見出しB　国際会議が閉幕]]></title>
+            <description><![CDATA[これはテスト用のダミー本文Bです。]]></description>
+            <link>https://www.bbc.com/japanese/articles/dummy0000002?at_medium=RSS&amp;at_campaign=rss</link>
+            <guid isPermaLink="false">https://www.bbc.com/japanese/articles/dummy0000002#0</guid>
+            <pubDate>Thu, 08 Oct 2026 07:38:45 GMT</pubDate>
+            <media:thumbnail width="240" height="135" url="https://ichef.bbci.co.uk/ace/ws/240/dummy/thumbnail-b.jpg"/>
+        </item>
+    </channel>
+</rss>
