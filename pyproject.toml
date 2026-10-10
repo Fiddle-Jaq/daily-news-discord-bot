@@ -3,6 +3,8 @@ name = "daily-news-discord-bot"
 version = "0.1.0"
 description = "Posts curated daily Japan and world news to Discord every morning"
 readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
 requires-python = ">=3.13"
 dependencies = [
     "feedparser>=6.0.14",

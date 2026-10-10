@@ -62,7 +62,7 @@
 | 配信時刻 | 06:07 JST 起動。07:37 JST 保険起動(未投稿時のみ動作)は **[フェーズ2]** |
 | 失敗通知 | フェーズ1は **GitHub標準の失敗メールのみ**。管理用 `DISCORD_ALERT_WEBHOOK_URL` は **[フェーズ2]** |
 | 秘密情報 | Webhook URL・APIキーをログ・外部通知に出さない。例外はクラス名と要点のみ記録(§9.7) |
-| リポジトリ | **非公開**(60日無活動ルールは公開リポジトリのみ対象のため対策不要。公開に切り替える場合は keepalive を **[フェーズ2]** で入れる → §9.4) |
+| リポジトリ | **公開**(MIT License)。60日無活動ルールの対象のため、月1回の手動確認で対応(keepalive は実装しない → §9.4) |
 | 実装の進め方 | フェーズ1(MVP)→ フェーズ2 の2段階。各段階に完了条件(§13) |
 | 型チェッカー | **mypy --strict**(+ pydantic プラグイン) |
 | 追加 | 検証CI(check.yml)、`--check-feeds` コマンド |
@@ -117,8 +117,8 @@ cat2(文化・エンタメ)とcat7(スポーツ)は使わない。
 
 - uv 0.12.x、`astral-sh/setup-uv@v10.2.0`(`enable-cache`, `python-version` 入力あり)。メジャーのみのタグ(`v10`)は存在しないため、フルバージョンで指定する(daily.yml ではさらにコミットSHAで固定する。§9.6)
 - GitHub Actions の `schedule` は `timezone:`(IANA名)指定に対応。Asia/Tokyo はDSTなしなので扱いやすい
-- 公開リポジトリでは「60日間アクティビティがないとscheduleが自動無効化」。本プロジェクトは非公開リポジトリのため対象外(§9.4)
-- 非公開リポジトリでは Actions の実行時間が無料枠の対象(GitHub Free は月 2,000分、キャッシュはリポジトリあたり 10GB。2026-10-10 確認)。毎日1回の daily.yml と check.yml で月数十分の見込み(§14)
+- 公開リポジトリでは「60日間アクティビティがないとscheduleが自動無効化」。本プロジェクトは公開リポジトリのため対象(対策は §9.4)
+- 公開リポジトリでは標準の GitHub-hosted ランナーは無料(2026-10-10 確認)。非公開に戻した場合は実行時間が無料枠の対象になる(GitHub Free は月 2,000分)
 - `schedule` は高負荷時(特に毎時0分)に遅延する
 - Discord Embed制限: 1メッセージ最大10 Embed、description 4096字、footer 2048字、全Embed合計 **6000字**
 - 参考バージョン: feedparser 6.0.14 / httpx 0.28.1 / pydantic 2.13 / ruff 0.16 / mypy 2.4
@@ -369,7 +369,7 @@ content: 📰 **2026年10月6日(火) 朝のニュース**
 - フォールバック投稿分も記録する
 - 書き込みは一時ファイル → rename(壊れたJSONを残さない)。読み込み時に壊れていたらログに ERROR([フェーズ2] アラート)を出して空状態で続行(二重投稿よりも配信停止の方が悪いと判断)
 - Webhook URL などの秘密情報は state.json に書かない(§9.7)
-- リポジトリは非公開のため、履歴を見られるのはアクセス権のある人のみ(内容は公開ニュースの見出しとURLだけなので、公開に切り替えても問題はない)
+- リポジトリは公開のため、state.json の履歴(投稿した記事のURLと日付)は誰でも見られる。記事の文章は含まない(フェーズ2の `recent_headlines` で見出しを保存する場合は、公開してよいか改めて判断する)
 
 ### 9.2 二重投稿の防止
 
@@ -406,17 +406,17 @@ on:
 - 大幅に遅延しても(例: 10時実行)そのまま配信する
 - フェーズ1で06:07の実行が失敗した場合は、失敗メールを見て `workflow_dispatch` で手動再実行する(state未更新なので `force` 不要)
 
-### 9.4 60日無活動による停止(公開リポジトリでの運用)
+### 9.4 60日無活動による停止(公開リポジトリ)
 
-- リポジトリは**公開する準備中**(2026-10-10 時点では非公開)。公開すると、60日無活動による schedule の自動無効化の対象になる
-  - 根拠: GitHub 公式ドキュメント「Events that trigger workflows」の `schedule` の節(2026-10-10 確認)。要点は「In a public repository, scheduled workflows are automatically disabled when no repository activity has occurred in 60 days.」で、非公開リポジトリについての記載はない
+- リポジトリは**公開**で運用する。公開リポジトリは、60日無活動による schedule の自動無効化の対象になる
+  - 根拠: GitHub 公式ドキュメント「Events that trigger workflows」の `schedule` の節(2026-10-10 確認)。要点は「In a public repository, scheduled workflows are automatically disabled when no repository activity has occurred in 60 days.」
   - ドキュメントの記述は変わりうるので、運用中も定期的に確認する(§14)
-- 公開後の運用:
-  - 毎日の state.json コミットがアクティビティになる見込み。ただし、`GITHUB_TOKEN` によるボットコミットが「リポジトリのアクティビティ」として数えられるかは**要検証**(§14)。確認できるまでは、これだけに頼らない
-  - 保険の方法は**未決(ユーザーが決める)**。次のどちらか:
-    - **案A: keepalive を実装する**([フェーズ2])。毎回のジョブ末尾で `gh workflow enable daily.yml` を実行し、無効化タイマーをリセットする(keepalive系Actionと同じ手法。効果は要検証)。`permissions` に `actions: write` を追加する(§9.6)。ワークフローの権限が増える
-    - **案B: 手動で見る**。公開から60日以内、以後も60日より短い間隔で、Actions タブでワークフローが有効なことを確認し、必要なら手動のコミットか再有効化を行う。権限は増えないが、確認を忘れると止まる
-- schedule が止まると(60日ルール・手動での無効化・GitHub 側の障害など)失敗メールも飛ばないため、Discordのチャンネルに投稿が来ないこと自体が最後のシグナルになる。README に明記済み
+- 毎日の state.json コミットがアクティビティになる見込み。ただし、`GITHUB_TOKEN` によるボットコミットが「リポジトリのアクティビティ」として数えられるかは**要検証**(§14)。確認できるまでは、これだけに頼らない
+- **対策は手動の確認とする(確定。2026-10-10)**。keepalive(`gh workflow enable` をジョブから実行する方法)は実装しない。ワークフローの権限(`actions: write`)を増やさないため
+  - **月に1回**、`gh run list --workflow daily.yml --event schedule --limit 5` で、直近の定期実行が毎日動いて成功していることを見る
+  - 止まっていたら、Actions のページ(daily ワークフロー)で再有効化する(`gh workflow enable daily.yml` でもよい)。止まっていた間の分は、必要なら `workflow_dispatch` で1回だけ手動実行する
+  - 確認の操作(`gh run list`)は読み取りだけなので、無効化タイマーはリセットしない。ボットコミットが数えられない場合、最後の手動のアクティビティから60日で止まりうる。その場合はチャンネルに投稿が来ないことか、月1回の確認で気づいて再有効化する(最大で数日〜1か月の配信停止を許容する)
+- schedule が止まると(60日ルール・手動での無効化・GitHub 側の障害など)失敗メールも飛ばないため、Discordのチャンネルに投稿が来ないこと自体が最後のシグナルになる。README に確認方法とあわせて明記済み
 - 公開リポジトリでは Actions の実行ログも誰でも見られる。ログに秘密情報(§9.7)と記事の内容(§9.5)を出さない
 
 ### 9.5 失敗・劣化の通知
@@ -438,9 +438,9 @@ on:
 **daily.yml**(配信)
 
 - `runs-on: ubuntu-24.04`、`timeout-minutes: 10`(ubuntu-latest は 2026-10-19 から Ubuntu 26.04 に段階移行するため固定する。check.yml も同じ)
-- `permissions`: `{ contents: write }` のみ。公開後に §9.4 の案A(keepalive)に決めた場合は、`actions: write` を追加する
+- `permissions`: `{ contents: write }` のみ(keepalive は実装しないので `actions: write` は不要。§9.4)
 - 手順(フェーズ1): checkout(`ref: main`)→ setup-uv(`enable-cache: true`)→ `uv sync --locked --no-dev` → `uv run --no-dev daily-news` → state.json に差分があれば `github-actions[bot]` でコミット・push
-- [フェーズ2] で末尾に追加: 失敗時アラート(`if: failure()`)。§9.4 で案A に決めた場合は、keepalive もその前に追加する
+- [フェーズ2] で末尾に追加: 失敗時アラート(`if: failure()`)
 - 秘密情報は `env:` で `daily-news` 実行ステップにのみ渡す(§9.7)
 - `workflow_dispatch` の inputs(`force` / `dry_run` / `no_llm`)は、`${{ }}` で `run:` に直接埋め込まず、実行ステップの `env:` 経由で渡して bash でフラグに変換する。schedule 実行では inputs が空になるため、どれも false 扱い(フラグなし)になる
 - `no_llm` は**手動実行のテスト用**(Gemini の無料枠を使わずに投稿経路や失敗通知を確かめる。§13.3 段階7の(3))。schedule では常に false で、本番の定期実行は必ず Gemini を使う経路で動く
@@ -593,7 +593,7 @@ uv run --env-file .env daily-news --dry-run            # Gemini込みで投稿�
 | `recent_headlines`(過去3日の見出しをLLMに参照させる・続報ルール) | 時間窓と投稿済みURLだけで新しさを判定。同じ出来事の続報が翌日も載ることは許容 |
 | `related_ids` の「他N件」表示 | `related_ids` はLLMに出力させ、検証と `posted_urls` への登録に使う。表示は代表記事の出典名のみ |
 | 管理用アラートWebhook(`DISCORD_ALERT_WEBHOOK_URL`) | 失敗(exit 1)は**GitHub標準の失敗メールのみ**。劣化はログと投稿フッターの理由表示 |
-| keepalive(`gh workflow enable`)。**公開後に必要になりうる** | 非公開の間は不要。公開後に実装するか(案A)、手動で見るか(案B)は未決(§9.4) |
+| keepalive(`gh workflow enable`)。**実装しない(確定)** | 月1回の `gh run list` による手動確認と再有効化で対応(§9.4)。フェーズ2でも入れない |
 | メッセージ分割 | 1メッセージ固定。上限超過時は末尾から削る(§8.2) |
 
 ### 13.2 検証コマンドの前提
@@ -805,11 +805,11 @@ jq -e 'all(.payloads[]; ([.embeds[] | (.title // "" | length) + (.description //
 jq -e '[.payloads[].embeds[].description | length] | max <= 4096' "$D/out.json"
 ```
 
-**段階P2-5: 保険起動(07:37)**(daily.yml の変更。§9.4 で案A(keepalive)に決めた場合は、ここで keepalive も入れる)
+**段階P2-5: 保険起動(07:37)**(daily.yml の変更)
 
 ```bash
 gh workflow run daily.yml -f dry_run=true && sleep 5 \
-  && gh run watch "$(latest_run daily.yml)" --exit-status   # (keepalive を入れた場合はそのステップを含めて)成功
+  && gh run watch "$(latest_run daily.yml)" --exit-status
 # 翌日 07:37 の実行完了後: 直近2回の定期実行が、ともに今日(JST)起動で、ともに成功
 # (2回目は投稿済みで即終了)
 gh run list --workflow daily.yml --event schedule --limit 2 --json conclusion,createdAt \
@@ -827,10 +827,10 @@ gh run list --workflow daily.yml --event schedule --limit 2 --json conclusion,cr
 - [x] GitHub ActionsランナーからNHK新RSSに到達できるか(ブロック時は日本枠の予備源比率を上げる)
   - 2026-10-09 確認: check.yml の feeds ジョブ(run 37890696184、ランナーイメージ ubuntu-24.04)で、NHK 6フィード(cat0/1/3/4/5/6)を含む全12フィードが HTTP 200・非stale。黙ってタイムアウトされることはなかった
   - ただし1回の成功であり、ランナーのIPやタイミングで変わりうる。段階7の試運転でも毎朝のログでNHKの取得状況を確認する
-- [ ] 公開後: ボットコミット(`GITHUB_TOKEN`)/ `gh workflow enable` が60日ルールのアクティビティとして有効か(§9.4)。非公開の間は対象外(2026-10-10 確認)
-- [ ] 公開後の60日ルールへの保険を、案A(keepalive を実装)と案B(手動で見る)のどちらにするか決める(§9.4)。案Bなら、確認の間隔と方法(カレンダーの予定など)も決める
-- [ ] 60日ルールが公開リポジトリだけを対象とする公式ドキュメントの記述(§9.4)が変わっていないかを定期的に確認する
-- [ ] Actions の実行時間(非公開リポジトリは GitHub Free で月 2,000分が無料枠。§3.3)を定期的に確認する。Settings → Billing の使用量で見る
+- [ ] ボットコミット(`GITHUB_TOKEN`)が60日ルールのアクティビティとして数えられるか(§9.4)。要検証
+- [x] 60日ルールへの対策(2026-10-10 確定): keepalive は実装せず、月1回 `gh run list` で定期実行を確認し、止まっていたら再有効化する(§9.4)
+- [ ] 月1回の定期実行の確認(§9.4)。運用中ずっと続ける
+- [ ] 60日ルールについての公式ドキュメントの記述(§9.4)が変わっていないかを定期的に確認する
 - [x] 使用モデルの無料枠の実数値(AI Studio。2026-10-09 確認)
   - `gemini-3.5-flash`(無料枠): RPM 5、TPM(入力)250K、RPD 20
   - 実測: 1回の実行(候補120件)で、入力約15,000トークン、リクエスト1回。上限に対して余裕がある
